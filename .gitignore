@@ -24,7 +24,7 @@ Thumbs.db
 .idea/
 
 # Private sources and local overrides never enter a release
-references/
+/references/
 configs/local.yaml
 .env.*
 !.env.example
