@@ -1,0 +1,828 @@
+{
+  "$defs": {
+    "Actor": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "default": "pawn",
+          "enum": [
+            "pawn",
+            "block_animal",
+            "block_bird",
+            "block_fish",
+            "vehicle",
+            "robot",
+            "prop",
+            "fbx"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        },
+        "role": {
+          "default": "",
+          "title": "Role",
+          "type": "string"
+        },
+        "height_m": {
+          "default": 1.7,
+          "title": "Height M",
+          "type": "number"
+        },
+        "radius_m": {
+          "default": 0.35,
+          "title": "Radius M",
+          "type": "number"
+        },
+        "head": {
+          "default": "sphere",
+          "enum": [
+            "sphere",
+            "cube",
+            "octahedron",
+            "capsule"
+          ],
+          "title": "Head",
+          "type": "string"
+        },
+        "body": {
+          "default": "capsule",
+          "enum": [
+            "capsule",
+            "box",
+            "cylinder",
+            "cone",
+            "taper",
+            "ellipsoid",
+            "bipyramid"
+          ],
+          "title": "Body",
+          "type": "string"
+        },
+        "color": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Color"
+        },
+        "facing_marker": {
+          "default": true,
+          "title": "Facing Marker",
+          "type": "boolean"
+        },
+        "fbx": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fbx"
+        },
+        "path": {
+          "$ref": "#/$defs/PathSpec"
+        },
+        "yaw_keys": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Yaw Keys",
+          "type": "array"
+        },
+        "max_yaw_rate_dps": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Yaw Rate Dps"
+        },
+        "flap_hz": {
+          "default": 0.0,
+          "title": "Flap Hz",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "path"
+      ],
+      "title": "Actor",
+      "type": "object"
+    },
+    "Block": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "shape": {
+          "default": "box",
+          "enum": [
+            "box",
+            "cylinder",
+            "sphere",
+            "cone",
+            "capsule",
+            "ramp",
+            "plane"
+          ],
+          "title": "Shape",
+          "type": "string"
+        },
+        "center": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Center",
+          "type": "array"
+        },
+        "size": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Size",
+          "type": "array"
+        },
+        "rotation_deg": {
+          "default": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Rotation Deg",
+          "type": "array"
+        },
+        "role": {
+          "default": "structure",
+          "title": "Role",
+          "type": "string"
+        },
+        "color": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Color"
+        },
+        "collision": {
+          "default": true,
+          "title": "Collision",
+          "type": "boolean"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group"
+        }
+      },
+      "required": [
+        "id",
+        "center",
+        "size"
+      ],
+      "title": "Block",
+      "type": "object"
+    },
+    "CameraTrack": {
+      "additionalProperties": false,
+      "properties": {
+        "keys": {
+          "items": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "minItems": 1,
+          "title": "Keys",
+          "type": "array"
+        },
+        "interpolation": {
+          "default": "cubic",
+          "enum": [
+            "cubic",
+            "smooth",
+            "linear"
+          ],
+          "title": "Interpolation",
+          "type": "string"
+        },
+        "aim_keys": {
+          "items": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Aim Keys",
+          "type": "array"
+        },
+        "aim_actor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aim Actor"
+        },
+        "aim_offset": {
+          "default": [
+            0.0,
+            0.0,
+            1.2
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Aim Offset",
+          "type": "array"
+        },
+        "roll_keys": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Roll Keys",
+          "type": "array"
+        },
+        "responses": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Responses",
+          "type": "array"
+        }
+      },
+      "required": [
+        "keys"
+      ],
+      "title": "CameraTrack",
+      "type": "object"
+    },
+    "Event": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "at_s": {
+          "title": "At S",
+          "type": "number"
+        },
+        "mechanism": {
+          "default": "",
+          "title": "Mechanism",
+          "type": "string"
+        },
+        "choice": {
+          "default": "",
+          "title": "Choice",
+          "type": "string"
+        },
+        "consequence": {
+          "default": "",
+          "title": "Consequence",
+          "type": "string"
+        },
+        "role": {
+          "default": "beat",
+          "enum": [
+            "beat",
+            "setup",
+            "twist"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "targets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Targets",
+          "type": "array"
+        },
+        "focus_region": {
+          "anyOf": [
+            {
+              "maxItems": 6,
+              "minItems": 6,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Focus Region"
+        }
+      },
+      "required": [
+        "id",
+        "at_s"
+      ],
+      "title": "Event",
+      "type": "object"
+    },
+    "PathSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "keys": {
+          "items": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "minItems": 1,
+          "title": "Keys",
+          "type": "array"
+        },
+        "interpolation": {
+          "default": "cubic",
+          "enum": [
+            "cubic",
+            "smooth",
+            "linear"
+          ],
+          "title": "Interpolation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "keys"
+      ],
+      "title": "PathSpec",
+      "type": "object"
+    },
+    "RenderSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "default": "workbench",
+          "enum": [
+            "workbench",
+            "eevee"
+          ],
+          "title": "Engine",
+          "type": "string"
+        },
+        "background": {
+          "default": [
+            0.82,
+            0.82,
+            0.82
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Background",
+          "type": "array"
+        },
+        "lighting": {
+          "const": "two_soft_plus_ambient",
+          "default": "two_soft_plus_ambient",
+          "title": "Lighting",
+          "type": "string"
+        }
+      },
+      "title": "RenderSpec",
+      "type": "object"
+    },
+    "RouteBeat": {
+      "additionalProperties": false,
+      "description": "One 路线与空间交接 line of the director card: condition → action → visible change.",
+      "properties": {
+        "start_s": {
+          "title": "Start S",
+          "type": "number"
+        },
+        "end_s": {
+          "title": "End S",
+          "type": "number"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "action": {
+          "title": "Action",
+          "type": "string"
+        },
+        "change": {
+          "title": "Change",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_s",
+        "end_s",
+        "condition",
+        "action",
+        "change"
+      ],
+      "title": "RouteBeat",
+      "type": "object"
+    },
+    "Shot": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "start_s": {
+          "title": "Start S",
+          "type": "number"
+        },
+        "end_s": {
+          "title": "End S",
+          "type": "number"
+        },
+        "lens_mm": {
+          "default": 32.0,
+          "title": "Lens Mm",
+          "type": "number"
+        },
+        "camera": {
+          "$ref": "#/$defs/CameraTrack"
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string"
+        },
+        "action": {
+          "default": "",
+          "title": "Action",
+          "type": "string"
+        },
+        "framing": {
+          "default": "",
+          "title": "Framing",
+          "type": "string"
+        },
+        "angle": {
+          "default": "",
+          "title": "Angle",
+          "type": "string"
+        },
+        "move": {
+          "default": "",
+          "title": "Move",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "start_s",
+        "end_s",
+        "camera"
+      ],
+      "title": "Shot",
+      "type": "object"
+    },
+    "TimeMapSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "interpolation": {
+          "default": "linear",
+          "enum": [
+            "linear",
+            "monotone_cubic"
+          ],
+          "title": "Interpolation",
+          "type": "string"
+        },
+        "knots": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "minItems": 2,
+          "title": "Knots",
+          "type": "array"
+        }
+      },
+      "required": [
+        "knots"
+      ],
+      "title": "TimeMapSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "default": "wbs.scene/1.0",
+      "title": "Schema",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "fps": {
+      "default": 24,
+      "title": "Fps",
+      "type": "integer"
+    },
+    "duration_s": {
+      "exclusiveMinimum": 0,
+      "title": "Duration S",
+      "type": "number"
+    },
+    "resolution": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "title": "Resolution",
+      "type": "array"
+    },
+    "precision": {
+      "default": "low",
+      "enum": [
+        "low",
+        "medium"
+      ],
+      "title": "Precision",
+      "type": "string"
+    },
+    "palette": {
+      "default": "grey",
+      "enum": [
+        "white",
+        "grey",
+        "identity"
+      ],
+      "title": "Palette",
+      "type": "string"
+    },
+    "time_map": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TimeMapSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "blocks": {
+      "items": {
+        "$ref": "#/$defs/Block"
+      },
+      "title": "Blocks",
+      "type": "array"
+    },
+    "actors": {
+      "items": {
+        "$ref": "#/$defs/Actor"
+      },
+      "title": "Actors",
+      "type": "array"
+    },
+    "shots": {
+      "items": {
+        "$ref": "#/$defs/Shot"
+      },
+      "minItems": 1,
+      "title": "Shots",
+      "type": "array"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/Event"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "beats": {
+      "items": {
+        "$ref": "#/$defs/RouteBeat"
+      },
+      "title": "Beats",
+      "type": "array"
+    },
+    "render": {
+      "$ref": "#/$defs/RenderSpec"
+    },
+    "source": {
+      "additionalProperties": true,
+      "title": "Source",
+      "type": "object"
+    },
+    "meta": {
+      "additionalProperties": true,
+      "title": "Meta",
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "duration_s",
+    "resolution",
+    "shots"
+  ],
+  "title": "SceneSpec",
+  "type": "object"
+}

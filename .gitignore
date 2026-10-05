@@ -1,0 +1,30 @@
+# local toolchain and environments
+tools/
+.venv/
+.venv-vision/
+models/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# production data never goes into git
+workspace/
+
+# editor / agent workspace settings
+.cursor/
+*.blend1
+.env
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Private sources and local overrides never enter a release
+references/
+configs/local.yaml
+.env.*
+!.env.example

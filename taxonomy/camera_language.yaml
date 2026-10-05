@@ -1,0 +1,42 @@
+# 镜头语言词表：正向分镜（StoryShot）、导演卡标签、镜头语法检查和提示词共用。
+# 运镜 id 沿用结构树 camera_move（[D2]），camerabench 列出反推运镜标签（reverse/camera_motion.py，CameraBench 基本类别）
+# 中与之对应的类别，正反两条线用同一套说法。
+source: "景别、角度为通行电影语法；运镜对应 CameraBench（NeurIPS 2025，CC-BY-4.0）运镜基本类别"
+
+# 景别按主体在画面里的未裁切尺寸判定：人物类（figure_kinds）用身高占画幅高度的倍数，其余（车辆、产品、鸟、鱼）
+# 用最大边占画幅对应边的倍数。区间 [下限, 上限)，null 表示不设上限。
+figure_kinds: [pawn, fbx, robot, block_animal]
+framing:
+  extreme_wide:  {label: 大远景, figure: [0.0, 0.2], object: [0.0, 0.12]}
+  wide:          {label: 远景,   figure: [0.2, 0.8], object: [0.12, 0.5]}
+  medium:        {label: 中景,   figure: [0.8, 2.5], object: [0.5, 1.3]}
+  close:         {label: 近景,   figure: [2.5, 6.0], object: [1.3, 4.0]}
+  extreme_close: {label: 特写,   figure: [6.0, null], object: [4.0, null]}
+
+# 角度按相机看向主体的俯仰角（度，向上为正）判定；斜角看画面滚转。
+angle:
+  eye:      {label: 平视, pitch: [-10, 10]}
+  high:     {label: 俯拍, pitch: [-60, -10]}
+  low:      {label: 仰拍, pitch: [10, 90]}
+  overhead: {label: 顶拍, pitch: [-90, -60]}
+  dutch:    {label: 斜角, roll_min_deg: 5}
+
+move:
+  static:      {label: 固定,       camerabench: [static]}
+  pan:         {label: 摇,         camerabench: [pan_left, pan_right]}
+  tilt:        {label: 俯仰摇,     camerabench: [tilt_up, tilt_down]}
+  push:        {label: 推,         camerabench: [dolly_in]}
+  pull:        {label: 拉,         camerabench: [dolly_out]}
+  truck:       {label: 移,         camerabench: [truck_left, truck_right]}
+  crane:       {label: 升降,       camerabench: [pedestal_up, pedestal_down]}
+  orbit:       {label: 环绕,       camerabench: [arc_left, arc_right]}
+  follow:      {label: 跟随,       camerabench: [dolly_in, dolly_out, truck_left, truck_right]}
+  lead:        {label: 前导跟拍,   camerabench: [dolly_out]}
+  side_track:  {label: 并行跟拍,   camerabench: [truck_left, truck_right]}
+  mount:       {label: 车载机位,   camerabench: []}
+  fpv:         {label: FPV,        camerabench: [dolly_in, roll_cw, roll_ccw]}
+  focus_shift: {label: 焦点转移,   camerabench: [static]}
+  top_down:    {label: 垂直俯视,   camerabench: [static]}
+  one_take:    {label: 一镜到底,   camerabench: []}
+  handheld:    {label: 手持跟拍,   camerabench: [shaky]}
+  pov:         {label: 主观视角,   camerabench: []}

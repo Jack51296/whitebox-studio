@@ -1,0 +1,26 @@
+# Isolated vision worker environment (.venv-vision). Installed by scripts/setup_vision.ps1 / .sh.
+# torch / torchvision are installed first from the CUDA wheel index (cu128 for RTX 50-series).
+# Everything here is Apache-2.0 / MIT / BSD; non-commercial weights are never fetched (see docs/licenses.md).
+numpy>=2.1
+opencv-python-headless>=4.10
+pillow>=10
+safetensors>=0.4
+huggingface_hub>=0.25
+einops>=0.8
+omegaconf>=2.3
+transformers>=4.56
+onnx>=1.17
+onnxruntime>=1.20
+imageio>=2.34
+trimesh>=4
+# modules depth_anything_3.api imports at load time (inference only; its web app / benchmark / 3DGS extras are skipped).
+# GPL-licensed evo / plyfile are NOT installed: worker_main.py stubs them (only used for pose alignment to given
+# cameras and PLY export, never by our inference path). See docs/licenses.md.
+moviepy==1.0.3
+addict
+e3nn
+scipy
+matplotlib
+pycolmap
+# depth-anything-3 itself is installed with --no-deps --ignore-requires-python: its metadata pins numpy<2,
+# opencv-python, xformers, open3d and python<=3.13(.0), none of which inference needs (see scripts/setup_vision.ps1).

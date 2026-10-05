@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whitebox-studio"
+version = "0.1.0"
+description = "白模视频生产平台：正向/反向白模构建、Blender 无头渲染、分层质检、V2V 提交包、入库与成本台账"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.6",
+  "typer>=0.12",
+  "pyyaml>=6",
+  "jinja2>=3.1",
+  "httpx>=0.27",
+  "numpy>=1.26",
+  "opencv-python-headless>=4.9",
+  "pillow>=10",
+  "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5"]
+# In-process vision backends (TransNetV2 / CenterFace ONNX). PySceneDetect itself is installed with --no-deps by
+# scripts/setup_vision.* because it hard-requires opencv-python, which clashes with opencv-python-headless.
+# Torch models (DA3, Grounding DINO, SAM 2.1, MapAnything) live in the separate .venv-vision worker environment.
+vision = ["onnxruntime>=1.20", "click>=8,!=8.3.0", "platformdirs", "tqdm"]
+
+[project.scripts]
+wbs = "wbs.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+wbs = ["blender/*.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "blender: needs a Blender executable (tools/tools.json, WBS_BLENDER or PATH)",
+  "ffmpeg: needs ffmpeg and ffprobe",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["references", "skills/generate-whitebox-v2v-package"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501", "B008", "B905"]

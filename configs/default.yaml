@@ -1,0 +1,127 @@
+# whitebox-studio 默认配置。
+# 覆盖顺序：本文件 → configs/local.yaml（不入库）→ 环境变量 WBS_CONFIG 指向的文件 → 个别环境变量（WBS_WORKSPACE、WBS_BLENDER 等）。
+
+# 生产数据根目录（批次、台账、看板、日志都在这里）。相对路径以仓库根目录为基准。
+workspace: ./workspace
+
+# 各路线的默认规格。来源：[D2] 结构树批量固定 15 秒/24fps/360 帧/1920×1080；
+# 故事驱动与长镜头沿用 whitebox-world-studio 交付包的 1280×720/24fps。
+specs:
+  forward_batch:
+    duration_s: 15
+    fps: 24
+    resolution: [1920, 1080]
+  forward_story:
+    duration_s: 26
+    fps: 24
+    resolution: [1280, 720]
+  forward_longtake:
+    duration_s: 15
+    fps: 24
+    resolution: [1280, 720]
+    lens_mm: 22
+  reverse:
+    duration_s: 15
+    fps: 24
+    resolution: [1280, 720]
+
+# low：[D6] 单几何体/棋子式人偶（默认）；medium：需要配置 fbx_library（标准人体白模 FBX 目录）。
+precision: low
+fbx_library: null
+
+render:
+  engine: workbench          # workbench（快，[D2] 推荐快速预览渲染）| eevee
+  timeout_s: 3600
+  video:
+    codec: libx264
+    crf: 18
+    preset: medium
+    pix_fmt: yuv420p
+
+# 质检阈值。静态闸门阈值照录 [D2] 反推流水线原文。
+qc:
+  static_gate:
+    layout_min_similarity: 0.35
+    structure_line_max_deg: 15
+    occupancy_max_delta: 0.10
+    interpenetration_max_m: 0.3
+  dynamic_gate:
+    sample_hz: 48
+    camera_min_clearance_m: 0.3
+    actor_min_pair_clearance_m: 0.05
+    # 各主体种类的物理上限（源时间测量）：速度 m/s，加速/制动/横向 m/s²，转向 °/s。
+    # 车辆按街车约 1 g 过弯、1.1 g 制动；转向上限同时用于朝向夹紧（blender/kinematics.py 同表）。
+    kinds:
+      pawn:         {speed: 12, accel: 8,  brake: 9,  lateral: 8,  yaw_rate: 720}
+      fbx:          {speed: 12, accel: 8,  brake: 9,  lateral: 8,  yaw_rate: 720}
+      robot:        {speed: 6,  accel: 4,  brake: 5,  lateral: 4,  yaw_rate: 360}
+      block_animal: {speed: 20, accel: 10, brake: 12, lateral: 10, yaw_rate: 540}
+      block_bird:   {speed: 30, accel: 15, brake: 15, lateral: 20, yaw_rate: 540}
+      block_fish:   {speed: 8,  accel: 6,  brake: 6,  lateral: 8,  yaw_rate: 540}
+      vehicle:      {speed: 45, accel: 7,  brake: 11, lateral: 10, yaw_rate: 120}
+      prop:         {speed: 2,  accel: 2,  brake: 2,  lateral: 2,  yaw_rate: 360}
+    motion_smooth_s: 0.1       # 求导前的平滑窗口
+    motion_hold_s: 0.1         # 超限持续这么久才算问题（避免样条抖动误报）
+    motion_min_speed_mps: 1.0  # 低于此速度不判横向与转向（朝向无定义）
+  # 构图：主体在每个非主观镜头里可见的帧占比；可见 = 在画框内且至少这么多采样点没被碰撞体块挡住。
+  framing:
+    min_visible_rate: 0.9
+    min_unoccluded: 0.34
+  # 铺垫可读性：铺垫事件所在镜头里，targets / focus_region 至少占画幅宽度的比例、至少多少未被遮挡。
+  # enforce: true 时不达标判预检失败；默认只警告。
+  readability:
+    setup_min_width_fraction: 0.05
+    setup_min_unoccluded: 0.5
+    enforce: false
+  # 镜头语法：跳切（同一主体、同一景别、机位变化小于此角度）、轴线中性区（相机与运动线夹角小于此值算中性镜头，
+  # 屏幕方向也按此判断主体是否在横穿画面）、近景占比上限。enforce: true 时语法、景别声明与节奏的警告判失败。
+  grammar:
+    jump_cut_min_angle_deg: 30
+    neutral_axis_deg: 20
+    max_close_share: 0.5
+    enforce: false
+  diversity_threshold: 0.3
+
+# 正向场景的尺度与速度参照（写进 scene.json 的体块，所有闸门都能看到）：沿快速主体路线的参照柱、车辆路线直线段的
+# 车道虚线、按标准 40 尺箱拆分的集装箱（role: container）、楼体楼层线（role: building，6 米以上）。
+# 故事路线默认开启（StoryPlan.dressing 可按片关闭），结构树只用于街道环境；长镜头与反推路线不加。
+forward:
+  dressing:
+    enabled: true
+    posts: true
+    post_spacing_m: 25
+    post_min_speed_mps: 5
+    lane_lines: true
+    containers: true
+    floor_lines: true
+    floor_height_m: 3.2
+
+providers_file: providers.yaml
+
+cost:
+  pricing_file: pricing.yaml
+  budget:
+    per_job_cny: 50
+    per_batch_cny: 2000
+
+# 真实（可能付费）的模型调用必须显式确认：命令行 --confirm-paid 或环境变量 WBS_CONFIRM_PAID=1。
+require_paid_confirmation: true
+
+# 工具路径。留空则依次查找：环境变量 WBS_BLENDER/WBS_FFMPEG/WBS_FFPROBE → tools/tools.json → PATH。
+tools:
+  blender: null
+  ffmpeg: null
+  ffprobe: null
+
+# 可选视觉模型（默认全部关闭，用现有实现）。选了新后端但依赖或权重不全时，自动按顺序回退并在结果里记录原因：
+#   切镜 transnetv2 → pyscenedetect → builtin；主体 sam3 → grounding_dino → motion；几何 mapanything → da3 → heuristic。
+# 安装：scripts/setup_vision.ps1（或 .sh）；权重：python scripts/fetch_models.py --profile default（只用公开地址，sha256 校验）。
+vision:
+  models_dir: models           # 相对仓库根目录；也可用环境变量 WBS_MODELS_DIR
+  python: null                 # 视觉工作环境的解释器；留空自动找 .venv-vision；也可用 WBS_VISION_PYTHON
+  worker_timeout_s: 1800
+  cuts: builtin                # builtin | pyscenedetect | transnetv2
+  subject: motion              # motion | grounding_dino | sam3
+  geometry: heuristic          # heuristic | da3 | mapanything | npz（外部 MegaSaM/COLMAP 结果，用 --track 指定）
+  camera_motion: rules         # rules（光流/几何规则）| llm（CameraBench 运镜分类，经规划模型提供方）
+  faces: [yunet]               # yunet | centerface，可多选取并集

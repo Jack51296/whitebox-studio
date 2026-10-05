@@ -1,0 +1,998 @@
+{
+  "$defs": {
+    "Block": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "shape": {
+          "default": "box",
+          "enum": [
+            "box",
+            "cylinder",
+            "sphere",
+            "cone",
+            "capsule",
+            "ramp",
+            "plane"
+          ],
+          "title": "Shape",
+          "type": "string"
+        },
+        "center": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Center",
+          "type": "array"
+        },
+        "size": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Size",
+          "type": "array"
+        },
+        "rotation_deg": {
+          "default": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Rotation Deg",
+          "type": "array"
+        },
+        "role": {
+          "default": "structure",
+          "title": "Role",
+          "type": "string"
+        },
+        "color": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Color"
+        },
+        "collision": {
+          "default": true,
+          "title": "Collision",
+          "type": "boolean"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group"
+        }
+      },
+      "required": [
+        "id",
+        "center",
+        "size"
+      ],
+      "title": "Block",
+      "type": "object"
+    },
+    "CameraRig": {
+      "additionalProperties": false,
+      "description": "A camera move described by intent; the platform compiles it into keys (forward/rigs.py).",
+      "properties": {
+        "type": {
+          "enum": [
+            "static",
+            "pan",
+            "follow",
+            "lead",
+            "side_track",
+            "push",
+            "pull",
+            "crane",
+            "orbit",
+            "top_down",
+            "pov",
+            "mount"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target"
+        },
+        "distance_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distance M"
+        },
+        "height_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Height M"
+        },
+        "lateral_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lateral M"
+        },
+        "side": {
+          "default": "right",
+          "enum": [
+            "left",
+            "right"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "position": {
+          "anyOf": [
+            {
+              "maxItems": 3,
+              "minItems": 3,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Position"
+        },
+        "arc_deg": {
+          "default": 90.0,
+          "title": "Arc Deg",
+          "type": "number"
+        },
+        "rise_m": {
+          "default": 4.0,
+          "title": "Rise M",
+          "type": "number"
+        },
+        "handheld": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Handheld",
+          "type": "number"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "CameraRig",
+      "type": "object"
+    },
+    "Event": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "at_s": {
+          "title": "At S",
+          "type": "number"
+        },
+        "mechanism": {
+          "default": "",
+          "title": "Mechanism",
+          "type": "string"
+        },
+        "choice": {
+          "default": "",
+          "title": "Choice",
+          "type": "string"
+        },
+        "consequence": {
+          "default": "",
+          "title": "Consequence",
+          "type": "string"
+        },
+        "role": {
+          "default": "beat",
+          "enum": [
+            "beat",
+            "setup",
+            "twist"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "targets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Targets",
+          "type": "array"
+        },
+        "focus_region": {
+          "anyOf": [
+            {
+              "maxItems": 6,
+              "minItems": 6,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Focus Region"
+        }
+      },
+      "required": [
+        "id",
+        "at_s"
+      ],
+      "title": "Event",
+      "type": "object"
+    },
+    "RouteBeat": {
+      "additionalProperties": false,
+      "description": "One 路线与空间交接 line of the director card: condition → action → visible change.",
+      "properties": {
+        "start_s": {
+          "title": "Start S",
+          "type": "number"
+        },
+        "end_s": {
+          "title": "End S",
+          "type": "number"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "action": {
+          "title": "Action",
+          "type": "string"
+        },
+        "change": {
+          "title": "Change",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_s",
+        "end_s",
+        "condition",
+        "action",
+        "change"
+      ],
+      "title": "RouteBeat",
+      "type": "object"
+    },
+    "RouteSpec": {
+      "additionalProperties": false,
+      "description": "Waypoints the platform compiles into keys within the actor kind's motion limits (forward/motion.py).",
+      "properties": {
+        "waypoints": {
+          "items": {
+            "$ref": "#/$defs/RouteWaypoint"
+          },
+          "minItems": 2,
+          "title": "Waypoints",
+          "type": "array"
+        },
+        "start_s": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Start S",
+          "type": "number"
+        },
+        "start_moving": {
+          "default": false,
+          "title": "Start Moving",
+          "type": "boolean"
+        },
+        "corner_radius_m": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corner Radius M"
+        }
+      },
+      "required": [
+        "waypoints"
+      ],
+      "title": "RouteSpec",
+      "type": "object"
+    },
+    "RouteWaypoint": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "z": {
+          "default": 0.0,
+          "title": "Z",
+          "type": "number"
+        },
+        "at_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "At S"
+        },
+        "stop_s": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Stop S",
+          "type": "number"
+        },
+        "speed_mps": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Speed Mps"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "RouteWaypoint",
+      "type": "object"
+    },
+    "StoryCharacter": {
+      "additionalProperties": false,
+      "description": "A story participant; ``kind`` picks the white-box proxy (a vehicle's radius is half its length).",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string"
+        },
+        "color": {
+          "title": "Color",
+          "type": "string"
+        },
+        "kind": {
+          "default": "pawn",
+          "enum": [
+            "pawn",
+            "vehicle",
+            "robot",
+            "block_animal",
+            "block_bird",
+            "block_fish",
+            "prop"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "head": {
+          "default": "sphere",
+          "enum": [
+            "sphere",
+            "cube",
+            "octahedron",
+            "capsule"
+          ],
+          "title": "Head",
+          "type": "string"
+        },
+        "body": {
+          "default": "capsule",
+          "enum": [
+            "capsule",
+            "box",
+            "cylinder",
+            "cone",
+            "taper",
+            "ellipsoid",
+            "bipyramid"
+          ],
+          "title": "Body",
+          "type": "string"
+        },
+        "height_m": {
+          "default": 1.7,
+          "title": "Height M",
+          "type": "number"
+        },
+        "radius_m": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Radius M"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "color"
+      ],
+      "title": "StoryCharacter",
+      "type": "object"
+    },
+    "StoryProp": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "timeline": {
+          "default": "",
+          "title": "Timeline",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description"
+      ],
+      "title": "StoryProp",
+      "type": "object"
+    },
+    "StoryShot": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "start_s": {
+          "title": "Start S",
+          "type": "number"
+        },
+        "end_s": {
+          "title": "End S",
+          "type": "number"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "action": {
+          "title": "Action",
+          "type": "string"
+        },
+        "framing": {
+          "default": "",
+          "enum": [
+            "",
+            "extreme_wide",
+            "wide",
+            "medium",
+            "close",
+            "extreme_close"
+          ],
+          "title": "Framing",
+          "type": "string"
+        },
+        "angle": {
+          "default": "",
+          "enum": [
+            "",
+            "eye",
+            "high",
+            "low",
+            "overhead",
+            "dutch"
+          ],
+          "title": "Angle",
+          "type": "string"
+        },
+        "move": {
+          "default": "",
+          "enum": [
+            "",
+            "static",
+            "pan",
+            "tilt",
+            "push",
+            "pull",
+            "truck",
+            "crane",
+            "orbit",
+            "follow",
+            "lead",
+            "side_track",
+            "mount",
+            "fpv",
+            "focus_shift",
+            "top_down",
+            "one_take",
+            "handheld",
+            "pov"
+          ],
+          "title": "Move",
+          "type": "string"
+        },
+        "lens_mm": {
+          "default": 32.0,
+          "title": "Lens Mm",
+          "type": "number"
+        },
+        "camera_keys": {
+          "items": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Camera Keys",
+          "type": "array"
+        },
+        "rig": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CameraRig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "aim_actor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aim Actor"
+        },
+        "aim_keys": {
+          "items": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Aim Keys",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "start_s",
+        "end_s",
+        "title",
+        "action"
+      ],
+      "title": "StoryShot",
+      "type": "object"
+    },
+    "StorySpace": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "function": {
+          "title": "Function",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "function"
+      ],
+      "title": "StorySpace",
+      "type": "object"
+    },
+    "TimeMapSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "interpolation": {
+          "default": "linear",
+          "enum": [
+            "linear",
+            "monotone_cubic"
+          ],
+          "title": "Interpolation",
+          "type": "string"
+        },
+        "knots": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "minItems": 2,
+          "title": "Knots",
+          "type": "array"
+        }
+      },
+      "required": [
+        "knots"
+      ],
+      "title": "TimeMapSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "logline": {
+      "title": "Logline",
+      "type": "string"
+    },
+    "content_class": {
+      "enum": [
+        "narrative",
+        "motion"
+      ],
+      "title": "Content Class",
+      "type": "string"
+    },
+    "duration_s": {
+      "exclusiveMinimum": 0,
+      "title": "Duration S",
+      "type": "number"
+    },
+    "world": {
+      "title": "World",
+      "type": "string"
+    },
+    "lighting": {
+      "default": "",
+      "title": "Lighting",
+      "type": "string"
+    },
+    "story": {
+      "title": "Story",
+      "type": "string"
+    },
+    "goal": {
+      "title": "Goal",
+      "type": "string"
+    },
+    "obstacle": {
+      "title": "Obstacle",
+      "type": "string"
+    },
+    "stakes": {
+      "title": "Stakes",
+      "type": "string"
+    },
+    "ending": {
+      "title": "Ending",
+      "type": "string"
+    },
+    "characters": {
+      "items": {
+        "$ref": "#/$defs/StoryCharacter"
+      },
+      "minItems": 1,
+      "title": "Characters",
+      "type": "array"
+    },
+    "props": {
+      "items": {
+        "$ref": "#/$defs/StoryProp"
+      },
+      "title": "Props",
+      "type": "array"
+    },
+    "spaces": {
+      "items": {
+        "$ref": "#/$defs/StorySpace"
+      },
+      "title": "Spaces",
+      "type": "array"
+    },
+    "blocks": {
+      "items": {
+        "$ref": "#/$defs/Block"
+      },
+      "title": "Blocks",
+      "type": "array"
+    },
+    "paths": {
+      "additionalProperties": {
+        "items": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        "type": "array"
+      },
+      "title": "Paths",
+      "type": "object"
+    },
+    "routes": {
+      "additionalProperties": {
+        "$ref": "#/$defs/RouteSpec"
+      },
+      "title": "Routes",
+      "type": "object"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/Event"
+      },
+      "minItems": 3,
+      "title": "Events",
+      "type": "array"
+    },
+    "twist": {
+      "title": "Twist",
+      "type": "integer"
+    },
+    "setup": {
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 1,
+      "title": "Setup",
+      "type": "array"
+    },
+    "beats": {
+      "items": {
+        "$ref": "#/$defs/RouteBeat"
+      },
+      "title": "Beats",
+      "type": "array"
+    },
+    "semantic_only": {
+      "default": "",
+      "title": "Semantic Only",
+      "type": "string"
+    },
+    "shots": {
+      "items": {
+        "$ref": "#/$defs/StoryShot"
+      },
+      "minItems": 1,
+      "title": "Shots",
+      "type": "array"
+    },
+    "time_map": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TimeMapSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "dressing": {
+      "default": true,
+      "title": "Dressing",
+      "type": "boolean"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "logline",
+    "content_class",
+    "duration_s",
+    "world",
+    "story",
+    "goal",
+    "obstacle",
+    "stakes",
+    "ending",
+    "characters",
+    "events",
+    "twist",
+    "setup",
+    "shots"
+  ],
+  "title": "StoryPlan",
+  "type": "object"
+}

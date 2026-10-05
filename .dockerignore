@@ -1,0 +1,12 @@
+.git
+.venv
+tools
+workspace
+references
+tests
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+*.blend1
+.env

@@ -1,0 +1,4 @@
+* text=auto
+# This verbatim prompt intentionally contains the baseline's two trailing spaces.
+# Keep the exact model input; do not trim it to satisfy a formatting check.
+prompts/v2v/style_2d.md whitespace=-blank-at-eol

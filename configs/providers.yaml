@@ -1,0 +1,37 @@
+# 模型提供方配置。默认全部为 mock / 只导出，开发和测试不会产生任何外部调用。
+#
+# 接入真实接口：把 provider 改为 openai_compatible（或 http_generic），并在环境变量 / 密钥系统里
+# 设置下面 *_env 指向的变量（例如自选 OpenAI 兼容网关的地址与 Key）。
+# 本仓库和代码都不保存、不打印密钥；首次真实调用前请先 --dry-run 查看调用清单与预估费用。
+
+llm:
+  provider: mock            # mock | openai_compatible
+  model: null               # 由网关配置决定，不猜版本、不自动升级（Skill v3 规则）
+  base_url_env: WBS_LLM_BASE_URL
+  api_key_env: WBS_LLM_API_KEY
+  timeout_s: 180
+  max_output_tokens: 16000
+
+image:
+  provider: mock            # mock | openai_compatible
+  model: null               # Skill v3：生图为 GPT，具体模型 ID 沿用用户接口配置
+  base_url_env: WBS_IMAGE_BASE_URL
+  api_key_env: WBS_IMAGE_API_KEY
+  size: 1536x864
+  timeout_s: 300
+
+video:
+  provider: manual          # manual（只导出提交包，默认）| http_generic | cosmos_transfer | wan_vace
+  model: SD2.5              # Skill v3：视频为 SD2.5；仅作记录
+  endpoint_env: WBS_VIDEO_ENDPOINT
+  api_key_env: WBS_VIDEO_API_KEY
+  timeout_s: 600
+  # 可选自建后端（需先 wbs render <任务> --passes depth,seg,edge 生成控制通道，再重建提交包）：
+  # provider: cosmos_transfer   # 自建 NIM（NVIDIA Open Model License，Hopper 架构、约 80GB 显存）；按付费调用受 --confirm-paid 与预算约束
+  # endpoint_env: WBS_COSMOS_ENDPOINT
+  # api_key_env: WBS_COSMOS_API_KEY
+  # control_weights: {depth: 0.5, seg: 0.3, edge: 0.4}
+  # provider: wan_vace          # 本机 ComfyUI（Wan2.2 VACE-Fun，Apache-2.0，480p 试验）
+  # server: http://127.0.0.1:8188
+  # workflow: comfyui/wan_vace_480p.api.json   # 相对 configs/，ComfyUI "Save (API)" 导出并替换占位符
+  # control: depth

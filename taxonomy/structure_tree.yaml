@@ -1,0 +1,115 @@
+# 视频结构树（结构化版本）。运行分类与默认基线一致。
+# 来源：[D2] Blender批量造白膜数据 · 视频结构树。原文「高表现力运镜」下"焦点转移、上帝视角垂直俯视、一镜到底"重复出现，此处去重。
+# "时代"只影响 V2V 渲染提示词（世界观），不进入白模几何——白模控制层不包含世界观、材质和渲染风格（[D2] prompt 设计）。
+
+version: 1.0.0
+
+dimensions:
+  shot_form:
+    label: 镜头形式
+    values:
+      long_take: {label: 长镜头}
+      multi_shot: {label: 多镜头, shot_count: [2, 5]}
+
+  subject:
+    label: 主体状态
+    values:
+      none:
+        label: 无主体
+        children:
+          fpv_architecture: FPV建筑空间漫游
+          indoor_walkthrough: 室内空间漫游
+          nature: 自然环境空镜
+          city: 城市/街区空镜
+      person:
+        label: 人
+        children:
+          single: 单人
+          duo: 双人
+          trio: 三人
+          crowd: 多人（大于三人）
+      animal:
+        label: 动物
+        children:
+          land: 陆生
+          water: 水生
+          air: 空中
+      object:
+        label: 物体
+        children:
+          vehicle: 载具
+          product: 产品/道具
+          robot: 机械/机器人
+
+  color:
+    label: 白膜体块的颜色
+    values:
+      white: 纯白色
+      grey: 灰白色
+      identity: 用不同颜色来区别主体、背景等
+
+  era:
+    label: 时代
+    values:
+      ancient_china: 古代·中国古代
+      ancient_europe: 古代·欧洲古代
+      cyberpunk: 未来·赛博朋克
+      space: 未来·宇宙飞行
+      steampunk: 未来·蒸汽朋克
+      modern: 现代
+
+  viewpoint:
+    label: 视角
+    values:
+      eye_level: 人视角·平视
+      low_angle: 人视角·仰视
+      high_angle: 人视角·俯视
+      creature: 动物/物体视角
+      panoramic: 全景相机视角
+      ultra_wide: 超广角视角
+      normal: 正常视角
+
+  camera_move:
+    label: 运镜
+    values:
+      push: 简单运镜·推
+      pull: 简单运镜·拉
+      pan: 简单运镜·摇
+      truck: 简单运镜·移
+      fpv: FPV
+      follow: 高表现力·跟随镜头
+      focus_shift: 高表现力·焦点转移
+      top_down: 高表现力·上帝视角垂直俯视
+      one_take: 高表现力·一镜到底
+      handheld: 高表现力·手持晃动感运镜
+      pov: 高表现力·主观第一人称视角（POV）
+
+  content_class:
+    label: 内容类别
+    values:
+      narrative: 叙事
+      motion: 运动
+
+# 白模控制层要表达的内容（[D2]）
+control_layer:
+  - 主体的位置、数量、比例、朝向
+  - 白膜体块的颜色
+  - 动作/位移/相互关系/运镜
+  - 建筑、地形、道具的空间布局
+  - 景别、构图、前中后景
+  - 相机路径与镜头节奏
+
+# 抽样约束：不成立的组合直接排除（代码见 wbs/taxonomy.py）
+constraints:
+  - when: {subject: none}
+    exclude: {camera_move: [follow, focus_shift, pov], viewpoint: [creature]}
+  - when: {camera_move: focus_shift}
+    require: {subject_child: [duo, trio, crowd]}
+  - when: {camera_move: pov}
+    require: {subject: [person, animal]}
+  - when: {camera_move: one_take}
+    require: {shot_form: [long_take]}
+  - when: {subject_child: product}
+    exclude: {camera_move: [fpv, pov, follow], content_class: [motion]}
+  - when: {subject_child: water}
+    exclude: {camera_move: [top_down]}

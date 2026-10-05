@@ -1,0 +1,32 @@
+# 单价表（美元）。以下数值是从源文档成本记录反推的示例，正式生产前请按合同价格更新。
+# 未知价格填 null：成本台账会记录用量，但把金额标为"未知"，不会编造。
+
+usd_to_cny: 7.0             # [D7] "按 1 美元≈7 元粗算"
+
+models:
+  mock:
+    input_per_mtok: 0
+    cached_input_per_mtok: 0
+    output_per_mtok: 0
+    per_image: 0
+    per_video_second: 0
+
+  # [D7] 成本表反推：普通输入 14.7 万≈$1.47、缓存输入 196.6 万≈$1.97、输出 1.03 万≈$0.51
+  gpt-6-astra:
+    input_per_mtok: 10.0
+    cached_input_per_mtok: 1.0
+    output_per_mtok: 50.0
+
+  # [D2] 反推 skill 估算口径："按 $3/百万 input 这档定价"；输出单价文档未给出
+  skill-agent-default:
+    input_per_mtok: 3.0
+    cached_input_per_mtok: null
+    output_per_mtok: null
+
+  # [D7] 后台截图：doubao-seedance-2.5 单次约 $20.46（30 秒成片，文档记为约 140 元）
+  doubao-seedance-2.5:
+    per_video_second: 0.682
+
+  # 生图单价文档未给出
+  gpt-image:
+    per_image: null

@@ -1,0 +1,126 @@
+{
+  "$defs": {
+    "Zone": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "function": {
+          "title": "Function",
+          "type": "string"
+        },
+        "width_m": {
+          "default": 8.0,
+          "maximum": 30.0,
+          "minimum": 4.0,
+          "title": "Width M",
+          "type": "number"
+        },
+        "depth_m": {
+          "default": 10.0,
+          "maximum": 40.0,
+          "minimum": 4.0,
+          "title": "Depth M",
+          "type": "number"
+        },
+        "turn": {
+          "default": "straight",
+          "enum": [
+            "straight",
+            "left",
+            "right"
+          ],
+          "title": "Turn",
+          "type": "string"
+        },
+        "props": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 0,
+          "title": "Props",
+          "type": "integer"
+        },
+        "height_m": {
+          "default": 3.2,
+          "maximum": 12.0,
+          "minimum": 2.4,
+          "title": "Height M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "function"
+      ],
+      "title": "Zone",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "logline": {
+      "title": "Logline",
+      "type": "string"
+    },
+    "duration_s": {
+      "exclusiveMinimum": 0,
+      "title": "Duration S",
+      "type": "number"
+    },
+    "zones": {
+      "items": {
+        "$ref": "#/$defs/Zone"
+      },
+      "maxItems": 12,
+      "minItems": 2,
+      "title": "Zones",
+      "type": "array"
+    },
+    "with_subject": {
+      "default": true,
+      "title": "With Subject",
+      "type": "boolean"
+    },
+    "lens_mm": {
+      "default": 22.0,
+      "title": "Lens Mm",
+      "type": "number"
+    },
+    "camera_height_m": {
+      "default": 1.6,
+      "title": "Camera Height M",
+      "type": "number"
+    },
+    "door_width_m": {
+      "default": 2.4,
+      "maximum": 6.0,
+      "minimum": 1.6,
+      "title": "Door Width M",
+      "type": "number"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "logline",
+    "duration_s",
+    "zones"
+  ],
+  "title": "LongTakePlan",
+  "type": "object"
+}
