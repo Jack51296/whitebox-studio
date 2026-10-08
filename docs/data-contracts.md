@@ -43,6 +43,7 @@ JSON Schema 在 `schemas/`（由 `src/wbs/models/` 生成，`wbs schemas` 或 `s
 每镜 `camera_keys` 与 `rig` 至少写一个，写了 `camera_keys` 就按手写关键帧。
 `dressing`（默认 true）：按 `forward.dressing` 自动加尺度参照：平均速度 > 5 m/s 的路线旁每 25 米一根参照柱（参与碰撞）、车辆路线直线段的车道虚线、
 `container` 体块拆成 12.19 × 2.44 × 2.59 米标准箱（`group` 保留原 id）、高度 ≥ 6 米的 `building` 每 3.2 米一圈楼层线（后两类线不参与碰撞）；生成的体块写进 scene.json。
+`blocks[]` 已带平台生成的参照（`POST_001`、`LANE_001`、`<id>__floorN`，例如由已加参照的街区布局得到的规划）时，按当前场景重新生成，不重复添加；已拆分的标准箱保留并照常计数。
 `characters[]`：`{id, role, color, kind: pawn|vehicle|robot|block_animal|block_bird|block_fish|prop, head, body, height_m, radius_m, description}`；`radius_m` 缺省按 kind 取值（人物 0.35，车辆 2.3 即车长一半）。
 `lighting`（可选）：时段、天气与主要光源，只写入 V2V 渲染提示词的“光线与质感”，留空时按时代默认；白模仍按明亮灰白渲染。
 导演卡与续作提示词的代理说明按主体种类生成：全是人物时沿用参考原句，含车辆等其他种类时改写为对应的还原与声音描述。

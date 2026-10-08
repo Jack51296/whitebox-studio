@@ -148,6 +148,26 @@ def test_cli_story_imports_external_plan_with_vehicles(workspace, tmp_path):
     assert all(a["kind"] == "pawn" and a["radius_m"] == 0.35 for i, a in actors.items() if i != first)
 
 
+@pytest.mark.parametrize("mode", ["chain", "single"])
+def test_cli_story_and_revise_in_a_dressed_street_add_scale_cues_once(workspace, mode):
+    from wbs.cli import app
+
+    runner = CliRunner()
+    result = runner.invoke(app, ["forward", "story", "--batch", "D", "--job", "D1", "--brief", "两人抢一只滚动的箱子，最后一起抬走",
+                                 "--content-class", "motion", "--mode", mode, "--no-render"])
+    assert result.exit_code == 0, result.output
+    job = JobPaths(workspace / "batches" / "D" / "D1")
+    assert any(b["role"] == "floor_line" for b in read_json(job.story_plan)["blocks"]), "mock plan carries street cues"
+    result = runner.invoke(app, ["forward", "revise", str(job.root), "--notes", "第二镜更近一些", "--level", "shots",
+                                 "--no-render"])
+    assert result.exit_code == 0, result.output
+    scene = read_json(job.scene)
+    ids = [b["id"] for b in scene["blocks"]]
+    assert len(ids) == len(set(ids))
+    floor_lines = sum(b["role"] == "floor_line" for b in scene["blocks"])
+    assert floor_lines == scene["meta"]["dressing"]["floor_lines"] > 0
+
+
 def test_cli_story_then_revise_backs_up_first(workspace):
     from wbs.cli import app
 

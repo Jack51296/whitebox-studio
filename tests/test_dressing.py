@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import dataclasses
 
 import numpy as np
@@ -67,6 +68,19 @@ def test_story_scenes_get_posts_and_lane_marks_clear_of_paths_and_cameras():
     assert min(np.hypot(path[:, 0] - x, path[:, 1] - y).min() for x, y in posts) > 2.3 + 0.15 + 0.6
     plain = story_to_scene(_chase_plan(dressing=False), spec, "P", dressing=settings.forward.dressing).to_json_dict()
     assert "dressing" not in plain["meta"] and len(plain["blocks"]) == 3
+
+
+def test_dressing_a_dressed_scene_again_replaces_its_own_cues():
+    cfg = load_settings().forward.dressing
+    scene = story_to_scene(_chase_plan(), Spec(duration_s=20, fps=24, resolution=(320, 180)), "D",
+                           dressing=cfg).to_json_dict()
+    again = copy.deepcopy(scene)
+    assert dress(again, cfg) == scene["meta"]["dressing"]
+    assert SceneSpec.model_validate(again).to_json_dict()["blocks"] == scene["blocks"]
+    authored = {"id": "kerb_post", "shape": "cylinder", "center": [5, 5, 1], "size": [0.3, 0.3, 2], "role": "reference_post"}
+    kept = {"blocks": [authored], "actors": []}
+    dress(kept, cfg)
+    assert kept["blocks"] == [authored], "only the platform's own cues are replaced"
 
 
 def test_parallel_routes_keep_posts_on_the_outer_kerbs():

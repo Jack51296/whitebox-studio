@@ -8,6 +8,7 @@ Posts collide (cameras and actors keep clear of them); marks and floor lines do 
 from __future__ import annotations
 
 import math
+import re
 from typing import Any
 
 import numpy as np
@@ -18,6 +19,7 @@ from ..config import Dressing
 CONTAINER_M = (12.19, 2.44, 2.59)
 POST_RADIUS = 0.15
 DASH_M, GAP_M = 3.0, 6.0
+CUE_IDS = {"reference_post": re.compile(r"POST_\d{3,}"), "lane_marking": re.compile(r"LANE_\d{3,}")}
 
 
 def _rotate(x: float, y: float, yaw_deg: float) -> tuple[float, float]:
@@ -191,14 +193,32 @@ def lane_marks(scene: dict, blocks: list[dict], actors: dict[str, np.ndarray]) -
     return out
 
 
+def _grouped(b: dict, suffix: str) -> bool:
+    group = b.get("group")
+    return bool(group) and re.fullmatch(re.escape(group) + suffix, b["id"]) is not None
+
+
+def _own_cue(b: dict) -> bool:
+    """A floor line, post or lane mark written by an earlier ``dress`` (role and generated id both match)."""
+    if b.get("role") == "floor_line":
+        return _grouped(b, r"__floor\d+")
+    pattern = CUE_IDS.get(b.get("role"))
+    return pattern is not None and pattern.fullmatch(b["id"]) is not None
+
+
 def dress(scene: dict, cfg: Dressing) -> dict[str, Any]:
-    """Add the cues in place; returns counts (also stored as ``meta.dressing``)."""
+    """Add the cues in place; returns counts (also stored as ``meta.dressing``).
+
+    Dressing an already dressed scene (e.g. a plan built from a dressed street) replaces the earlier cues instead of
+    adding them twice; container units already split are kept and still counted."""
     if not cfg.enabled:
         return {}
-    blocks = list(scene.get("blocks", []))
+    blocks = [b for b in scene.get("blocks", []) if not _own_cue(b)]
     counts: dict[str, Any] = {}
     if cfg.containers:
-        blocks, counts["container_units"] = split_containers(blocks)
+        split_before = sum(b.get("role") == "container" and _grouped(b, r"__\d+_\d+_\d+") for b in blocks)
+        blocks, units = split_containers(blocks)
+        counts["container_units"] = split_before + units
     if cfg.floor_lines:
         lines = floor_lines(blocks, cfg.floor_height_m)
         blocks += lines
