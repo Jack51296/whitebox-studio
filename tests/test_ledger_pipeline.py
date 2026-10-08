@@ -3,8 +3,10 @@ from __future__ import annotations
 import pytest
 
 from wbs.errors import TransientError
+from wbs.layout import Workspace
 from wbs.ledger import Ledger
 from wbs.pipeline import run_step
+from wbs.qc import finish
 
 
 def test_step_is_skipped_when_inputs_are_unchanged(tmp_path):
@@ -64,6 +66,29 @@ def test_transient_errors_are_retried_with_a_bound(tmp_path):
     with pytest.raises(TransientError):
         run_step(ledger, "B/j2", "llm", always, inputs={}, retries=1, backoff_s=0)
     assert len(attempts) == 2
+
+
+def test_batch_finish_run_is_closed_with_its_outcome(tmp_path, monkeypatch):
+    ws = Workspace(tmp_path / "ws").ensure()
+    ws.batch_dir("B").mkdir()
+    ledger = Ledger(ws.ledger_path)
+
+    def runs():
+        with ledger.tx() as conn:
+            return conn.execute("SELECT * FROM runs WHERE command='batch_finish' ORDER BY started_at").fetchall()
+
+    finish.finish_batch(ws, ledger, "B", make_zip=False)
+    (done,) = runs()
+    assert done["status"] == "succeeded" and done["finished_at"] >= done["started_at"]
+
+    def broken_zip(*_args):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(finish, "_zip", broken_zip)
+    with pytest.raises(OSError):
+        finish.finish_batch(ws, ledger, "B")
+    failed = runs()[-1]
+    assert failed["status"] == "failed" and failed["finished_at"] is not None
 
 
 def test_reviews_keep_latest_value(tmp_path):

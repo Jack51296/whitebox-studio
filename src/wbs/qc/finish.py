@@ -74,6 +74,18 @@ def finish_batch(ws: Workspace, ledger: Ledger, batch_id: str, make_zip: bool = 
     """``export_models`` writes FBX/GLB + 镜头切换.csv into each rendered job before the ZIP is built."""
     batch_dir = ws.batch_dir(batch_id)
     jobs = ws.iter_jobs(batch_id)
+    run_id = ledger.start_run("batch_finish", {"batch_id": batch_id, "jobs": len(jobs)})
+    status = "failed"
+    try:
+        result = _deliver(batch_dir, batch_id, jobs, make_zip, include_blend, export_models, settings)
+        status = "succeeded"
+    finally:
+        ledger.finish_run(run_id, status)
+    return result
+
+
+def _deliver(batch_dir: Path, batch_id: str, jobs: list[JobPaths], make_zip: bool, include_blend: bool,
+             export_models: bool, settings: Settings | None) -> dict[str, Any]:
     exported: dict[str, Any] = {}
     if export_models:
         from ..export import export_models as export_job
@@ -104,7 +116,6 @@ def finish_batch(ws: Workspace, ledger: Ledger, batch_id: str, make_zip: bool = 
         result["model_exports"] = exported
     if make_zip:
         result["zip"] = str(_zip(batch_dir, jobs, include_blend))
-    ledger.start_run("batch_finish", {"batch_id": batch_id, "jobs": len(jobs)})
     return result
 
 
